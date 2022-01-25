@@ -19,7 +19,7 @@ const AuthProvider = ({children}) => {
         return createUserWithEmailAndPassword(auth, email, password)
         .then((credential) => {
             const user = credential.user;
-            await setDoc(doc(db, 'usuarios', user.uid), {email, password, creationDate: new Date()});
+            setDoc(doc(db, 'usuarios', user.uid), {email, password, creationDate: new Date()});
         })
     };
 

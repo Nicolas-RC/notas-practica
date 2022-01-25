@@ -20,10 +20,12 @@ import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 
 import { FaUserAlt } from 'react-icons/fa';
 
+// Contextos
+import { useAuth } from "../contexts/AuthContext";
+
 // Componentes de notas 🤯
 import Links from "./links/Links";
 import Notas from "./notas/Notas";
-import { useAuth } from "../contexts/AuthContext";
 
 
 const Inicio = () => {

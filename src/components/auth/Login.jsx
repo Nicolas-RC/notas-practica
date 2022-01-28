@@ -42,7 +42,7 @@ const Login = () => {
             setLoagind(true);
             await login({...valuesForm});
             setValuesForm({...initValuesForm});
-            navigate("/inicio/notas");
+            navigate("/");
         }catch (error) {
             console.log(error.message);
         }

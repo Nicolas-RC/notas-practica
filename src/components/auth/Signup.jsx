@@ -42,7 +42,7 @@ const Signup = () => {
             setLoagind(true);
             await signUp({...valuesForm});
             setValuesForm({...initValuesForm});
-            navigate("/inicio/notas");
+            navigate("/");
         }catch (error) {
             console.log(error.message);
         }

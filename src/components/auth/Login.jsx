@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 // Componentes de reactstrap
-import { 
+import {
     Card,
     CardBody,
     Form,
     FormGroup,
     Label,
     Input,
-    Button
+    Button,
+    Alert
 } from "reactstrap";
 
 // Contextos
@@ -24,12 +25,13 @@ const Login = () => {
 
     const [loading, setLoagind] = useState(false);
     const [valuesForm, setValuesForm] = useState(initValuesForm);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
-     // Leer inputs del formulario para crear usuario
-     const readInputsForm = (e) => {
-        const {name, value} = e.target;
-        setValuesForm({...valuesForm, [name]: value});
+    // Leer inputs del formulario para crear usuario
+    const readInputsForm = (e) => {
+        const { name, value } = e.target;
+        setValuesForm({ ...valuesForm, [name]: value });
     }
 
     const { login } = useAuth();
@@ -40,11 +42,27 @@ const Login = () => {
 
         try {
             setLoagind(true);
-            await login({...valuesForm});
-            setValuesForm({...initValuesForm});
+            await login({ ...valuesForm });
+            setValuesForm({ ...initValuesForm });
             navigate("/");
-        }catch (error) {
-            console.log(error.message);
+        } catch (error) {
+            switch (error.code) {
+                case "auth/user-not-found":
+                    setError("El usuario no existe");
+                    break;
+                case "auth/wrong-password":
+                    setError("Contraseña incorrecta");
+                    break;
+                case "auth/invalid-email":
+                    setError("Ingrese un correo valido")
+                    break;
+                case "auth/internal-error":
+                    setError("Ingrese una contraseña")
+                    break;
+                default:
+                    setError("Ha ocurrido algo inesperado, intente más tarde");
+                    break;
+            }
         }
         setLoagind(false);
     };
@@ -54,10 +72,11 @@ const Login = () => {
             <Card>
                 <CardBody>
                     <h1 className="text-center mb-4">Notas🤯</h1>
+                    {error && <Alert color="danger" className="text-center">{error}</Alert>}
                     <Form onSubmit={handleFormSubmit}>
                         <FormGroup>
                             <Label>Correo electrónico</Label>
-                            <Input 
+                            <Input
                                 type="text"
                                 name="email"
                                 id="email"
@@ -69,7 +88,7 @@ const Login = () => {
                         </FormGroup>
                         <FormGroup>
                             <Label>Contraseña</Label>
-                            <Input 
+                            <Input
                                 type="password"
                                 name="password"
                                 id="password"

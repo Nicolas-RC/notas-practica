@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 // Componentes de reactstrap
-import { 
+import {
     Card,
     CardBody,
     Form,
     FormGroup,
     Label,
     Input,
-    Button
+    Button,
+    Alert
 } from "reactstrap";
 
 // Contextos
@@ -24,14 +25,15 @@ const Signup = () => {
 
     const [loading, setLoagind] = useState(false);
     const [valuesForm, setValuesForm] = useState(initValuesForm);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const { signUp } = useAuth();
 
     // Leer inputs del formulario para crear usuario
     const readInputsForm = (e) => {
-        const {name, value} = e.target;
-        setValuesForm({...valuesForm, [name]: value});
+        const { name, value } = e.target;
+        setValuesForm({ ...valuesForm, [name]: value });
     }
 
     // Función para el manejo del formulario
@@ -40,11 +42,27 @@ const Signup = () => {
 
         try {
             setLoagind(true);
-            await signUp({...valuesForm});
-            setValuesForm({...initValuesForm});
+            await signUp({ ...valuesForm });
+            setValuesForm({ ...initValuesForm });
             navigate("/");
-        }catch (error) {
-            console.log(error.message);
+        } catch (error) {
+            switch (error.code) {
+                case "auth/email-already-in-use":
+                    setError("El correo ya existe");
+                    break;
+                case "auth/weak-password":
+                    setError("La contraseña debe tener más de 6 carácteres");
+                    break;
+                case "auth/invalid-email":
+                    setError("Ingrese un correo valido")
+                    break;
+                case "auth/internal-error":
+                    setError("Ingrese una contraseña")
+                    break;
+                default:
+                    setError("Ha ocurrido algo inesperado, intente más tarde");
+                    break;
+            }
         }
         setLoagind(false);
     };
@@ -55,10 +73,11 @@ const Signup = () => {
             <Card>
                 <CardBody>
                     <h2 className="text-center mb-4">Registrate en Notas🤯</h2>
+                    {error && <Alert color="danger" className="text-center">{error}</Alert>}
                     <Form onSubmit={handleFormSubmit}>
                         <FormGroup>
                             <Label>Correo electrónico</Label>
-                            <Input 
+                            <Input
                                 type="text"
                                 name="email"
                                 id="email"
@@ -70,7 +89,7 @@ const Signup = () => {
                         </FormGroup>
                         <FormGroup>
                             <Label>Contraseña</Label>
-                            <Input 
+                            <Input
                                 type="password"
                                 name="password"
                                 id="password"
